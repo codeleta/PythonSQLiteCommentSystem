@@ -1,3 +1,4 @@
+import json
 import unittest
 import urllib.error
 from urllib.request import urlopen
@@ -30,3 +31,9 @@ class TestViews(unittest.TestCase):
     def test_404_view(self):
         with self.assertRaises(urllib.error.HTTPError):
             urlopen('{}/'.format(self.base_url))
+
+    def test_cities_json(self):
+        response = urlopen('{}/get_cities/'.format(self.base_url))
+        self.assertEqual(response.getcode(), 200)
+        json_response = json.loads(response.read())
+        self.assertIsInstance(json_response, dict)

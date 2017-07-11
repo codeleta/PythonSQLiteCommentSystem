@@ -1,3 +1,4 @@
+import json
 import logging
 
 
@@ -22,3 +23,11 @@ def list_comments(environ, start_response):
 def stat_comments(environ, start_response):
     start_response("200 OK", [("Content-type", "text/plain")])
     return ["Stat comment!".encode("utf-8")]
+
+
+def get_cities_json(environ, start_response):
+    start_response("200 OK", [("Content-type", "application/json")])
+    response = {
+        "cities": [1, 2, 3]
+    }
+    return [json.dumps(response).encode("utf-8")]
