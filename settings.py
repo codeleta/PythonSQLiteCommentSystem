@@ -1,3 +1,7 @@
+import os
+
+PROJECT_ROOT = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__))))
+
 LOGGING_CONF = {
     'version': 1,
     'disable_existing_loggers': False,

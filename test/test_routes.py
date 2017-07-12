@@ -16,24 +16,37 @@ class TestViews(unittest.TestCase):
         self.server.daemon = True
         self.server.start()
 
-    def test_add_comment_view(self):
+    def test_add_comment_route(self):
         response = urlopen('{}/comment/'.format(self.base_url))
         self.assertEqual(response.getcode(), 200)
+        response.close()
 
-    def test_list_comments_view(self):
+    def test_list_comments_route(self):
         response = urlopen('{}/view/'.format(self.base_url))
         self.assertEqual(response.getcode(), 200)
+        response.close()
 
-    def test_stat_comments_view(self):
+    def test_stat_comments_route(self):
         response = urlopen('{}/stat/'.format(self.base_url))
         self.assertEqual(response.getcode(), 200)
+        response.close()
 
-    def test_404_view(self):
+    def test_404_route(self):
         with self.assertRaises(urllib.error.HTTPError):
-            urlopen('{}/'.format(self.base_url))
+            urlopen('{}/not_exists_url/'.format(self.base_url))
 
-    def test_cities_json(self):
+    def test_cities_json_route(self):
         response = urlopen('{}/get_cities/'.format(self.base_url))
         self.assertEqual(response.getcode(), 200)
         json_response = json.loads(response.read())
         self.assertIsInstance(json_response, dict)
+        response.close()
+
+    def test_static_file_route(self):
+        response = urlopen('{}/static/css/style.css'.format(self.base_url))
+        self.assertEqual(response.getcode(), 200)
+        response.close()
+
+    def test_404_static_file_route(self):
+        with self.assertRaises(urllib.error.HTTPError):
+            urlopen('{}/static/css/no_exist_file.css'.format(self.base_url))

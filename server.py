@@ -1,5 +1,4 @@
 import logging.config
-
 from wsgiref.simple_server import make_server
 
 import settings
