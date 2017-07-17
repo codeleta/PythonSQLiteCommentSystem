@@ -66,10 +66,11 @@ def resolve(name, context):
         name = name[2:]
     try:
         for tok in name.split('.'):
-            context = context[tok]
+            if context:
+                context = context[tok]
         return context
     except KeyError:
-        raise TemplateContextError(name)
+        return None
 
 
 class _Fragment(object):

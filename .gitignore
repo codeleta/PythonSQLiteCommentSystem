@@ -102,3 +102,4 @@ ENV/
 
 # PyCharm project settings
 .idea/
+comments.db

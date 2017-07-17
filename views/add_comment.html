@@ -20,7 +20,7 @@
 	<main class="content">
     <h1>Главная</h1>
 		{% if comment_sent %}
-			<div>Комментарий отправлен</div>
+			<div>{{ comment_sent }}</div>
 		{% end %}
     <div class="menu">
       <p>Меню</p>
@@ -31,8 +31,50 @@
       </ul>
     </div>
 		<form action="." method="POST">
-			<input type="text" name="name">
-			<textarea name="text" id="" cols="30" rows="10"></textarea>
+			<label>
+				Имя*
+				<input type="text" name="first_name" required>
+			</label>
+			<label>
+				Фамилия*
+				<input type="text" name="last_name" required>
+			</label>
+			<label>
+				Отчество
+				<input type="text" name="middle_name">
+			</label>
+			<label>
+				Телефон
+				<input type="text" name="phone" pattern="\+7\(\d{3}\)\d{7}$">
+			</label>
+			<label>
+				Email
+				<input type="email" name="email" pattern="^[\w\.\+\-]+\@[\w\.\+\-]+\.[a-z]{2,3}$">
+			</label>
+      <label for="comment_region">Выберите область</label>
+      <select id="comment_region">
+				<option value="">----</option>
+				<option value="1">Вологодская обл</option>
+				<option value="2">Ленинградская обл</option>
+				<option value="3">Московская обл</option>
+				<option value="4">Краснодарский край</option>
+			</select>
+      <label for="comment_city">Выберите город</label>
+      <select name="city_id" id="comment_city">
+        <option value="">----</option>
+        <option value="1">Вологда</option>
+        <option value="2">Череповец</option>
+        <option value="3">Выборг</option>
+        <option value="4">Кировск</option>
+        <option value="5">Волоколамск</option>
+        <option value="6">Клин</option>
+        <option value="7">Краснодар</option>
+        <option value="8">Анапа</option>
+      </select>
+			<label for="comment_text">
+				Текст комментария*
+			</label>
+			<textarea name="text" id="comment_text" cols="30" rows="10" required></textarea>
 			<input type="submit" value="Добавить комментарий">
 		</form>
 	</main>

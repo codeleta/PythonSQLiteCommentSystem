@@ -8,6 +8,9 @@ import settings
 import codecs
 
 from controllers.template_render import Template
+from db.models import Region, City
+from db.models.comment import Comment
+from db.sql import SqlQuery
 
 logger = logging.getLogger(__name__)
 
@@ -39,27 +42,49 @@ def template_render_route(environ, start_response, path_to_template, **context):
 
 
 def add_comment(environ, start_response):
-    context = {
-        "comment_sent": False
-    }
     if environ.get('REQUEST_METHOD').upper() == 'GET':
-        return template_render_route(environ, start_response, 'views/add_comment.html', **context)
+        return template_render_route(environ, start_response, 'views/add_comment.html')
     elif environ.get('REQUEST_METHOD').upper() == 'POST':
         content_len = int(environ['CONTENT_LENGTH']) if environ.get('CONTENT_LENGTH') else 0
         body = urllib.parse.parse_qs(environ['wsgi.input'].read(content_len).decode(), True) if content_len > 0 else {}
-        print(body)
-        context["comment_sent"] = True
+        comment = Comment(body)
+        saved = comment.save()
+        context = {
+            "comment_sent": True if saved else str(comment.errors)
+        }
         return template_render_route(environ, start_response, 'views/add_comment.html', **context)
 
 
 def list_comments(environ, start_response):
-    start_response("200 OK", [("Content-type", "text/plain")])
-    return ["List comment!".encode("utf-8")]
+    fields = [
+        'comments.id', 'comments.first_name', 'comments.last_name', 'comments.text',
+        'comments.middle_name', 'comments.phone', 'comments.email',
+        'comments.city_id', 'cities.title AS city_title'
+    ]
+    qs = SqlQuery(Comment).select(fields).left_join("city_id").fetchall()
+    context = {'comments': qs}
+    return template_render_route(environ, start_response, 'views/list_comments.html', **context)
 
 
 def stat_comments(environ, start_response):
-    start_response("200 OK", [("Content-type", "text/plain")])
-    return ["Stat comment!".encode("utf-8")]
+    GET_params = urllib.parse.parse_qs(environ["QUERY_STRING"], True)
+    if GET_params.get('region'):
+        fields = [
+            'cities.id', 'cities.title', 'COUNT(comments.id) AS comments_count'
+        ]
+        query = SqlQuery(City).select(fields).left_join("city_id", Comment)
+        query = query.where(**{"cities.region_id__in": GET_params["region"]}).group_by("cities.id")
+        qs = query.fetchall()
+        context = {'cities': qs}
+    else:
+        fields = [
+            'regions.id', 'regions.title', 'COUNT(comments.id) AS comments_count'
+        ]
+        query = SqlQuery(Region).select(fields).left_join("region_id", City).left_join("city_id", Comment)
+        query = query.group_by("regions.id").where(True, **{"comments_count__gt": 2})
+        qs = query.fetchall()
+        context = {'regions': qs}
+    return template_render_route(environ, start_response, 'views/stat_regions.html', **context)
 
 
 def index(environ, start_response):
