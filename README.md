@@ -1,2 +1,4 @@
-# PythonSQLiteCommentSystem
-Python and SQLite module for comments. Create for test task.
+# TEST COMMAND
+python -m unittest discover -s .
+# RUN SIMPLE SERVER
+python server.py
