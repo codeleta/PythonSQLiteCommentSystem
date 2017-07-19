@@ -122,5 +122,7 @@ window.onload = function() {
   addEventToClassElements("row_as_link", clickRowAsLink);
 
   var region_select = document.getElementById('comment_region');
-  region_select.onchange = citySelectLoadOptions;
+  if (region_select) {
+    region_select.onchange = citySelectLoadOptions;
+  }
 };
