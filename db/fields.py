@@ -56,9 +56,9 @@ class IntField(BaseField):
     type = 'INTEGER'
 
     def validate(self, value):
+        if value and isinstance(value, list):
+            value = value[0]
         if value:
-            if isinstance(value, list):
-                value = value[0]
             try:
                 value = int(value)
             except TypeError:
@@ -85,9 +85,9 @@ class TextField(BaseField):
     def validate(self, value):
         if not self.blank and not value:
             raise FieldValidError("This field cannot be empty")
+        if value and isinstance(value, list):
+            value = value[0]
         if value:
-            if isinstance(value, list):
-                value = value[0]
             if isinstance(value, (str, bytes)):
                 if self.pattern and not re.match(self.pattern, value):
                     raise FieldValidError("Invalid value")

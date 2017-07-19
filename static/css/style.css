@@ -9,19 +9,19 @@ dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
+figure, figcaption, footer, header,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
+	font-family: 'Open Sans', sans-serif;
 	font-size: 100%;
-	font: inherit;
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+footer, header, menu, nav, section {
 	display: block;
 }
 body {
@@ -36,7 +36,6 @@ blockquote, q {
 blockquote:before, blockquote:after,
 q:before, q:after {
 	content: '';
-	content: none;
 }
 table {
 	border-collapse: collapse;
@@ -47,7 +46,7 @@ table {
 html {
 	height: 100%;
 }
-article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+article, aside, details, figcaption, figure, footer, header, main, nav, section, summary {
 	display: block;
 }
 body {
@@ -60,26 +59,231 @@ body {
 	margin: 0 auto;
 	min-height: 100%;
 	height: auto !important;
-	height: 100%;
+}
+
+h1 {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 20px 0;
+  line-height: 30px;
+}
+
+.hidden {
+  display: none !important;
 }
 
 
 /* Header
 -----------------------------------------------------------------------------*/
 .header {
-	height: 100px;
-	background: #FFE680;
+	height: 50px;
+	background: black;
+	text-transform: uppercase;
+  color: white;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 50px;
+  padding-left: 30px;
 }
 
 
 /* Middle
 -----------------------------------------------------------------------------*/
 .content {
-	padding: 0 0 50px;
+	padding: 10px 0 50px;
+}
+
+.menu {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.menu .menu_item {
+  display: inline-block;
+  padding: 5px;
+  white-space: nowrap;
+}
+
+/* Tables
+-----------------------------------------------------------------------------*/
+table {
+  border: 2px solid #a0a0a0;
+  width: 95%;
+  margin: 20px auto;
+  padding: 0;
+  word-wrap: break-word;
+}
+
+table tr {
+  border: 1px solid #a0a0a0;
+  text-align: center;
+}
+.row_as_link:hover {
+  cursor: pointer;
+  background-color: #ccc;
+}
+
+table th, table td {
+  padding: 10px;
+  width: 33.333333%;
+  box-sizing: border-box;
+}
+table td {text-align: left;border: 1px solid #a0a0a0;}
+table th {
+  background: #eee;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+@media screen and (max-width: 1024px) {
+  table {
+    border: 0;
+  }
+  table thead {
+    display: none;
+  }
+  table tr {
+    margin-bottom: 10px;
+    display: block;
+    border-bottom: 2px solid #a0a0a0;
+  }
+  table td {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+	  border: 0;
+    border-bottom: 1px dotted #a0a0a0;
+	  width: 100%;
+    min-height: 40px;
+  }
+  table td:last-child {
+    border-bottom: 0;
+  }
+  table td:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    padding: 0 8px;
+    background: #eee;
+  }
 }
 
 
+/* Form
+-----------------------------------------------------------------------------*/
+#add_comment_form {
+  margin: 10px auto;
+  width: 95%;
+}
+.field {
+  display: inline-block;
+  min-width: 250px;
+  box-sizing: border-box;
+  padding: 15px 1% 0;
+}
+.field_error {
+  color: #f33840;
+  display: inline-block;
+  font-weight: 800;
+}
+label {
+  margin: 0 0 3px 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+}
+textarea {
+  height: 100px;
+}
+input[type=text],
+input[type=email],
+textarea, 
+select {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border: 1px solid #BEBEBE;
+  padding: 7px;
+  margin: 0;
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+  width: 100%;
+  background-image: linear-gradient(90deg, #f07b21 3px, #fff 3px, #fff 100%);
+  background-image: -moz-linear-gradient(0deg, #f07b21 3px, #fff 3px, #fff 100%);
+}
+input[type=text]:focus,
+input[type=email]:focus,
+textarea:focus, 
+select:focus {
+  -moz-box-shadow: 0 0 8px #88D5E9;
+  -webkit-box-shadow: 0 0 8px #88D5E9;
+  box-shadow: 0 0 8px #88D5E9;
+  border: 1px solid #88D5E9;
+}
 
+input[type=text]:valid:not(:placeholder-shown),
+input[type=email]:valid:not(:placeholder-shown),
+textarea:valid:not(:placeholder-shown),
+select:valid:not(:placeholder-shown) {
+  background-image: linear-gradient(90deg, #009d51 3px, #fff 3px, #fff 100%);
+  background-image: -moz-linear-gradient(0deg, #009d51 3px, #fff 3px, #fff 100%);
+}
+input[type=text]:valid,
+input[type=email]:valid,
+textarea:valid,
+select:valid {
+  background-image: linear-gradient(90deg, #fff 3px, #fff 3px, #fff 100%);
+  background-image: -moz-linear-gradient(0deg, #fff 3px, #fff 3px, #fff 100%);
+}
+
+input[type=text]:invalid:focus:not(:placeholder-shown),
+input[type=email]:invalid:focus:not(:placeholder-shown),
+textarea:invalid:focus:not(:placeholder-shown),
+select:invalid:focus:not(:placeholder-shown) {
+  background-image: linear-gradient(90deg, #f33840 3px, #fff 3px, #fff 100%);
+  background-image: -moz-linear-gradient(0deg, #f33840 3px, #fff 3px, #fff 100%);
+}
+
+.full_width {
+  width: 100%;
+}
+
+.third_width {
+  width: 32%;
+}
+
+input[type=submit] {
+  background: #00bfff;
+  padding: 8px 15px 8px 15px;
+  border: none;
+  color: #fff;
+}
+input[type=submit]:hover {
+  background: #42aaff;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.required {
+  color: red;
+}
+
+@media screen and (max-width: 800px) {
+
+  .third_width {
+    width: 100%;
+    margin: 0;
+  }
+  .field_error {
+    display: initial;
+  }
+}
 
 /* Footer
 -----------------------------------------------------------------------------*/
@@ -88,6 +292,9 @@ body {
 	min-width: 300px;
 	max-width: 1200px;
 	height: 50px;
-	background: #BFF08E;
+	background: #00bfff;
 	position: relative;
+  line-height: 50px;
+  padding-left: 30px;
+  color: white;
 }

@@ -3,9 +3,10 @@
 <head>
 	<meta charset="utf-8" />
 	<!--[if lt IE 9]><script src="/static/js/html5shiv.min.js"></script><![endif]-->
-	<title>Добавить комментарий</title>
+	<title>Добавление комментария - Демиденко Я.В. тестовое задание</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
 	<link href="/static/css/style.css" rel="stylesheet">
 </head>
 
@@ -14,76 +15,97 @@
 <div class="wrapper">
 
 	<header class="header">
-		<strong>Комментарии</strong>
+		Комментарии
 	</header>
 
 	<main class="content">
-    <h1>Главная</h1>
+    <ul class="menu">
+      <li class="menu_item"><a href="/comment/">Добавление комментария</a></li>
+      <li class="menu_item"><a href="/view/">Просмотр комментариев</a></li>
+      <li class="menu_item"><a href="/stat/">Статистика</a></li>
+    </ul>
+    <h1>Добавление комментария</h1>
 		{% if comment_sent %}
-			<div>{{ comment_sent }}</div>
+			<p>Комментарий добавлен</p>
 		{% end %}
-    <div class="menu">
-      <p>Меню</p>
-      <ul>
-        <li><a href="/comment/">Добавление комментария</a></li>
-        <li><a href="/view/">Просмотр комментариев</a></li>
-        <li><a href="/stat/">Статистика</a></li>
-      </ul>
-    </div>
-		<form action="." method="POST">
-			<label>
-				Имя*
-				<input type="text" name="first_name" required>
-			</label>
-			<label>
-				Фамилия*
-				<input type="text" name="last_name" required>
-			</label>
-			<label>
-				Отчество
-				<input type="text" name="middle_name">
-			</label>
-			<label>
-				Телефон
-				<input type="text" name="phone" pattern="\+7\(\d{3}\)\d{7}$">
-			</label>
-			<label>
-				Email
-				<input type="email" name="email" pattern="^[\w\.\+\-]+\@[\w\.\+\-]+\.[a-z]{2,3}$">
-			</label>
-      <label for="comment_region">Выберите область</label>
-      <select id="comment_region">
-				<option value="">----</option>
-				<option value="1">Вологодская обл</option>
-				<option value="2">Ленинградская обл</option>
-				<option value="3">Московская обл</option>
-				<option value="4">Краснодарский край</option>
-			</select>
-      <label for="comment_city">Выберите город</label>
-      <select name="city_id" id="comment_city">
-        <option value="">----</option>
-        <option value="1">Вологда</option>
-        <option value="2">Череповец</option>
-        <option value="3">Выборг</option>
-        <option value="4">Кировск</option>
-        <option value="5">Волоколамск</option>
-        <option value="6">Клин</option>
-        <option value="7">Краснодар</option>
-        <option value="8">Анапа</option>
-      </select>
-			<label for="comment_text">
-				Текст комментария*
-			</label>
-			<textarea name="text" id="comment_text" cols="30" rows="10" required></textarea>
-			<input type="submit" value="Добавить комментарий">
+		<form action="." method="POST" id="add_comment_form">
+      <div class="field third_width">
+        <label for="comment_first_name">
+          Имя <span class="required">*</span>
+        </label>
+        <input type="text" name="first_name" id="comment_first_name" required {% if comment.first_name %}value="{{ comment.first_name }}"{% end %}>
+        <span class="field_error">{{ errors.first_name }}</span>
+      </div>
+      <div class="field third_width">
+        <label for="comment_last_name">
+          Фамилия <span class="required">*</span>
+        </label>
+        <input type="text" name="last_name" id="comment_last_name" required {% if comment.last_name %}value="{{ comment.last_name }}"{% end %}>
+        <span class="field_error">{{ errors.last_name }}</span>
+      </div>
+      <div class="field third_width">
+        <label for="comment_middle_name">
+          Отчество
+        </label>
+        <input type="text" name="middle_name" id="comment_middle_name" {% if comment.middle_name %}value="{{ comment.middle_name }}"{% end %}>
+        <span class="field_error">{{ errors.middle_name }}</span>
+      </div>
+      <div class="field third_width">
+        <label for="comment_phone">
+          Телефон
+        </label>
+        <input type="text" name="phone" id="comment_phone" placeholder="+7(999)1234567" minlength="14" maxlength="14" title="Формат: +7(999)1234567" pattern="\+7\(\d{3}\)\d{7}$" {% if comment.phone %}value="{{ comment.phone }}"{% end %}>
+        <span class="field_error">{{ errors.phone }}</span>
+      </div>
+      <div class="field third_width">
+        <label for="comment_email">
+          Email
+        </label>
+        <input type="email" name="email" id="comment_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" {% if comment.email %}value="{{ comment.email }}"{% end %}>
+        <span class="field_error">{{ errors.email }}</span>
+      </div>
+      <div>
+        <div class="field third_width">
+          <label for="comment_region">Выберите область</label>
+          <select id="comment_region" name="region_id">
+            <option value="">----</option>
+            {% each regions %}
+            <option value="{{ it.id }}" {% if ..region_id == it.id %}selected{% end %}>{{ it.title }}</option>
+            {% end %}
+          </select>
+          <span class="field_error"></span>
+        </div>
+        <div class="field third_width{% if cities %}{% else %} hidden{% end %}">
+          <label for="comment_city">Выберите город</label>
+          <select name="city_id" id="comment_city">
+            <option value="">----</option>
+            {% each cities %}
+              <option value="{{ it.id }}" {% if ..city_id == it.id %}selected{% end %}>{{ it.title }}</option>
+            {% end %}
+          </select>
+          <span class="field_error">{{ errors.city_id }}</span>
+        </div>
+      </div>
+      <div class="field full_width">
+        <label for="comment_text">
+          Текст комментария <span class="required">*</span>
+        </label>
+        <textarea name="text" id="comment_text" class="full_width" cols="30" rows="10" required>{% if comment.text %}{{ comment.text }}{% end %}</textarea>
+        <span class="field_error">{{ errors.text }}</span>
+      </div>
+      <div class="field full_width">
+        <input type="submit" value="Добавить комментарий">
+      </div>
 		</form>
 	</main>
 
 </div>
 
 <footer class="footer">
-	<strong>© Ярослав Демиденко, 2017 - н.в.</strong>
+	© Ярослав Демиденко, 2017 - н.в.
 </footer>
+
+<script src="/static/js/script.js"></script>
 
 </body>
 </html>

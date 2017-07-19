@@ -70,7 +70,7 @@ def resolve(name, context):
                 context = context[tok]
         return context
     except KeyError:
-        return None
+        return {}
 
 
 class _Fragment(object):

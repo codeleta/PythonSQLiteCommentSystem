@@ -3,9 +3,10 @@
 <head>
 	<meta charset="utf-8" />
 	<!--[if lt IE 9]><script src="/static/js/html5shiv.min.js"></script><![endif]-->
-	<title>Статистика комментариев по регионам</title>
+	<title>Статистика - Демиденко Я.В. тестовое задание</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
 	<link href="/static/css/style.css" rel="stylesheet">
 </head>
 
@@ -14,46 +15,57 @@
 <div class="wrapper">
 
 	<header class="header">
-		<strong>Комментарии</strong>
+		Комментарии
 	</header>
 
 	<main class="content">
-    <h1>Главная</h1>
-    <div class="menu">
-      <p>Меню</p>
-      <ul>
-        <li><a href="/comment/">Добавление комментария</a></li>
-        <li><a href="/view/">Просмотр комментариев</a></li>
-        <li><a href="/stat/">Статистика</a></li>
-      </ul>
-    </div>
+    <ul class="menu">
+      <li class="menu_item"><a href="/comment/">Добавление комментария</a></li>
+      <li class="menu_item"><a href="/view/">Просмотр комментариев</a></li>
+      <li class="menu_item"><a href="/stat/">Статистика</a></li>
+    </ul>
+    <h1>Статистика</h1>
+    {% if cities %}
+      <a href="/stat/">&larr; Вернуться на статистику по регионам</a>
+    {% end %}
     <table>
-      {% if regions %}
-        {% each regions %}
-          <tr>
-            <td><a href="?region={{ it.id }}">{{ it.id }}</a></td>
-            <td>{{ it.title }}</td>
-            <td>{{ it.comments_count }}</td>
-          </tr>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>Название</th>
+          <th>Количество комментариев</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if regions %}
+          {% each regions %}
+            <tr class="row_as_link" data-href="?region={{ it.id }}">
+              <td data-label="id">{{ it.id }}</td>
+              <td data-label="Название">{{ it.title }}</td>
+              <td data-label="Количество комментариев">{{ it.comments_count }}</td>
+            </tr>
+          {% end %}
         {% end %}
-      {% end %}
-      {% if cities %}
-        {% each cities %}
-          <tr>
-            <td>{{ it.id }}</td>
-            <td>{{ it.title }}</td>
-            <td>{{ it.comments_count }}</td>
-          </tr>
+        {% if cities %}
+          {% each cities %}
+            <tr>
+              <td data-label="id">{{ it.id }}</td>
+              <td data-label="Название">{{ it.title }}</td>
+              <td data-label="Количество комментариев">{{ it.comments_count }}</td>
+            </tr>
+          {% end %}
         {% end %}
-      {% end %}
+      </tbody>
     </table>
 	</main>
 
 </div>
 
 <footer class="footer">
-	<strong>© Ярослав Демиденко, 2017 - н.в.</strong>
+	© Ярослав Демиденко, 2017 - н.в.
 </footer>
+
+<script src="/static/js/script.js"></script>
 
 </body>
 </html>

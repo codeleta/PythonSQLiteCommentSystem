@@ -36,10 +36,12 @@ class TestViews(unittest.TestCase):
             urlopen('{}/not_exists_url/'.format(self.base_url))
 
     def test_cities_json_route(self):
-        response = urlopen('{}/get_cities/'.format(self.base_url))
+        with self.assertRaises(urllib.error.HTTPError):
+            urlopen('{}/get_cities/'.format(self.base_url))
+        response = urlopen('{}/get_cities/?region=1'.format(self.base_url))
         self.assertEqual(response.getcode(), 200)
         json_response = json.loads(response.read())
-        self.assertIsInstance(json_response, dict)
+        self.assertIsInstance(json_response, list)
         response.close()
 
     def test_static_file_route(self):

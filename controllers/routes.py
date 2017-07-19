@@ -42,28 +42,48 @@ def template_render_route(environ, start_response, path_to_template, **context):
 
 
 def add_comment(environ, start_response):
+    context = {
+        "regions": SqlQuery(Region).select("*").fetchall(),
+        "region_id": 0
+    }
     if environ.get('REQUEST_METHOD').upper() == 'GET':
-        return template_render_route(environ, start_response, 'views/add_comment.html')
+        return template_render_route(environ, start_response, 'views/add_comment.html', **context)
     elif environ.get('REQUEST_METHOD').upper() == 'POST':
         content_len = int(environ['CONTENT_LENGTH']) if environ.get('CONTENT_LENGTH') else 0
         body = urllib.parse.parse_qs(environ['wsgi.input'].read(content_len).decode(), True) if content_len > 0 else {}
         comment = Comment(body)
         saved = comment.save()
-        context = {
-            "comment_sent": True if saved else str(comment.errors)
-        }
+        context.update({
+            "comment_sent": saved,
+            "comment": comment if not saved else {},
+            "errors": comment.errors
+        })
+        if comment["region_id"] and not saved:
+            region_id = int(comment["region_id"])
+            context.update({
+                "cities": SqlQuery(City).select("*").where(**{"cities.region_id": region_id}).fetchall(),
+                "region_id": region_id,
+                "city_id": comment["city_id"]
+            })
         return template_render_route(environ, start_response, 'views/add_comment.html', **context)
 
 
 def list_comments(environ, start_response):
-    fields = [
-        'comments.id', 'comments.first_name', 'comments.last_name', 'comments.text',
-        'comments.middle_name', 'comments.phone', 'comments.email',
-        'comments.city_id', 'cities.title AS city_title'
-    ]
-    qs = SqlQuery(Comment).select(fields).left_join("city_id").fetchall()
-    context = {'comments': qs}
-    return template_render_route(environ, start_response, 'views/list_comments.html', **context)
+    if environ.get('REQUEST_METHOD').upper() == 'GET':
+        fields = [
+            'comments.id', 'comments.first_name', 'comments.last_name', 'comments.text',
+            'comments.middle_name', 'comments.phone', 'comments.email',
+            'comments.city_id', 'cities.title AS city_title'
+        ]
+        qs = SqlQuery(Comment).select(fields).left_join("city_id").fetchall()
+        context = {'comments': qs}
+        return template_render_route(environ, start_response, 'views/list_comments.html', **context)
+    elif environ.get('REQUEST_METHOD').upper() == 'DELETE':
+        start_response("200 OK", [("Content-type", "application/json")])
+        content_len = int(environ['CONTENT_LENGTH']) if environ.get('CONTENT_LENGTH') else 0
+        body = urllib.parse.parse_qs(environ['wsgi.input'].read(content_len).decode(), True) if content_len > 0 else {}
+        deleted = Comment(body).delete()
+        return [json.dumps({"success": deleted}).encode("utf-8")]
 
 
 def stat_comments(environ, start_response):
@@ -81,7 +101,7 @@ def stat_comments(environ, start_response):
             'regions.id', 'regions.title', 'COUNT(comments.id) AS comments_count'
         ]
         query = SqlQuery(Region).select(fields).left_join("region_id", City).left_join("city_id", Comment)
-        query = query.group_by("regions.id").where(True, **{"comments_count__gt": 2})
+        query = query.group_by("regions.id").where(True, **{"comments_count__gt": 5})
         qs = query.fetchall()
         context = {'regions': qs}
     return template_render_route(environ, start_response, 'views/stat_regions.html', **context)
@@ -92,8 +112,11 @@ def index(environ, start_response):
 
 
 def get_cities_json(environ, start_response):
-    start_response("200 OK", [("Content-type", "application/json")])
-    response = {
-        "cities": [1, 2, 3]
-    }
-    return [json.dumps(response).encode("utf-8")]
+    GET_params = urllib.parse.parse_qs(environ["QUERY_STRING"], True)
+    if GET_params.get('region'):
+        start_response("200 OK", [("Content-type", "application/json")])
+        query = SqlQuery(City).select("*").where(**{"cities.region_id__in": GET_params["region"]})
+        qs = query.fetchall()
+        json_qs = json.dumps(qs, default=lambda x: x.values)
+        return [json_qs.encode("utf-8")]
+    return handler_404(environ, start_response)

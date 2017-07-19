@@ -10,10 +10,14 @@ class BaseModel(object):
 
     def __init__(self, values=None):
         self.errors = {}
-        self.values = values or {}
+        self.values = self._validate_values(values or {})
+        self.raw_values = values
 
     def __getitem__(self, item):
-        return self.values.get(item)
+        value = self.values.get(item, self.raw_values.get(item))
+        if isinstance(value, list):
+            value = value[0]
+        return value
 
     def _update(self):
         if not self.values.get(self.primary_field):
@@ -40,16 +44,25 @@ class BaseModel(object):
         execute((sql, list(self.values.values())))
         return True
 
-    def is_valid(self):
-        self.errors = {}
+    def _validate_values(self, values=None):
         valid_values = {}
+        if not values and not hasattr(self, 'values'):
+            return valid_values
+        values = values or self.values
         for name, field in self.fields.items():
             try:
-                validated_data = field.validate(self.values.get(name))
+                validated_data = field.validate(values.get(name))
             except FieldValidError as e:
                 self.errors[name] = str(e)
+                valid_values[name] = values.get(name)
             else:
                 valid_values[name] = validated_data
+                if name in self.errors:
+                    del self.errors[name]
+        return valid_values
+
+    def is_valid(self):
+        valid_values = self._validate_values()
         if self.errors:
             return False
         else:
@@ -64,7 +77,15 @@ class BaseModel(object):
         return False
 
     def delete(self):
-        pass
+        if self.values[self.primary_field]:
+            sql = "DELETE FROM {} WHERE {} = {}".format(
+                self.table_name,
+                self.primary_field,
+                self.values[self.primary_field]
+            )
+            execute(sql)
+            return True
+        return False
 
     @classmethod
     def create_table_sql(cls):
